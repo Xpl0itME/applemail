@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Redirecting...</title>
   <meta charset="UTF-8">
+  <title>Redirecting...</title>
   <script>
-    window.onload = function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectTo = urlParams.get('rd');
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get("rd");
 
-      // Basic validation to avoid javascript: URLs or null values
-      if (redirectTo && redirectTo.startsWith("http")) {
-        window.location.href = redirectTo;
-      } else {
-        document.body.innerHTML = "<h2>Invalid or missing redirect URL.</h2>";
-      }
-    };
+    if (target && target.startsWith("http")) {
+      // Redirect immediately
+      window.location.replace(target);
+    } else {
+      document.write("<h2>Invalid or missing redirect URL.</h2>");
+    }
   </script>
 </head>
 <body>
-  <p>Redirecting... If nothing happens, <a id="manual" href="#">click here</a>.</p>
+  <noscript>
+    <h2>JavaScript is required for redirection.</h2>
+  </noscript>
 </body>
 </html>
