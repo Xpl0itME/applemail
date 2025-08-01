@@ -1,23 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Redirecting...</title>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const target = params.get("rd");
-
-    if (target && target.startsWith("http")) {
-      // Redirect immediately
-      window.location.replace(target);
-    } else {
-      document.write("<h2>Invalid or missing redirect URL.</h2>");
-    }
-  </script>
+  <title>Launch iPhone Shortcut</title>
 </head>
 <body>
-  <noscript>
-    <h2>JavaScript is required for redirection.</h2>
-  </noscript>
+  <h2>Tap to run Shortcut</h2>
+  <a href="shortcuts://run-shortcut?name=MyShortcut">
+    <button style="padding: 10px 20px; font-size: 16px;">Run Shortcut</button>
+  </a>
 </body>
 </html>
