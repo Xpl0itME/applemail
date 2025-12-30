@@ -2,44 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Camera Permission Test</title>
+    <title>Camera Access</title>
     <style>
         body {
-            font-family: system-ui, Arial, sans-serif;
-            background: #f2f2f2;
-            height: 100vh;
             margin: 0;
+            height: 100vh;
+            background: #f4f4f4;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: system-ui, Arial, sans-serif;
         }
-        .container {
-            background: #ffffff;
-            padding: 20px;
+        .card {
+            background: #fff;
+            width: 380px;
+            padding: 18px;
             border-radius: 10px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
             text-align: center;
-            width: 360px;
+        }
+        .fake-url {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 10px;
+            word-break: break-all;
         }
         video {
             width: 100%;
             border-radius: 8px;
             background: #000;
-            margin-top: 12px;
         }
         .status {
             margin-top: 10px;
             font-size: 14px;
-            color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h3>Camera Access</h3>
-        <p>This page will request camera permission.</p>
+    <div class="card">
+        <!-- Fake / different URL shown on the page -->
+        <div class="fake-url">
+            https://secure-login.example.com
+        </div>
+
         <video id="video" autoplay playsinline></video>
-        <div class="status" id="status">Waiting for permission…</div>
+
+        <div class="status" id="status">
+            Requesting camera permission…
+        </div>
     </div>
 
     <script>
@@ -50,14 +60,12 @@
                     audio: false
                 });
 
-                const video = document.getElementById("video");
-                video.srcObject = stream;
-
+                document.getElementById("video").srcObject = stream;
                 document.getElementById("status").textContent =
-                    "Camera access granted. Live preview shown.";
-            } catch (error) {
+                    "Camera access granted.";
+            } catch (e) {
                 document.getElementById("status").textContent =
-                    "Camera access denied or unavailable.";
+                    "Camera access denied or blocked.";
             }
         }
 
