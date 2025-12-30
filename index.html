@@ -1,13 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta http-equiv="refresh" content="0; url=https://jafbeiznlzglohhquqben151xeq61vy1y.oast.fun" />
-  <meta http-equiv="refresh" content="0; url=https://jafbeiznlzglohhquqben151xeq61vy1y.oast.fun/kk.png" />
-  <meta http-equiv="refresh" content="0; url=https://jafbeiznlzglohhquqben151xeq61vy1y.oast.fun/pdf.com" />
-  <meta http-equiv="refresh" content="0; url=https://jafbeiznlzglohhquqben151xeq61vy1y.oast.fun" />
+    <meta charset="UTF-8">
+    <title>Camera Permission Test</title>
+    <style>
+        body {
+            font-family: system-ui, Arial, sans-serif;
+            background: #f2f2f2;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            text-align: center;
+            width: 360px;
+        }
+        video {
+            width: 100%;
+            border-radius: 8px;
+            background: #000;
+            margin-top: 12px;
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-<p>Hello</p>
+    <div class="container">
+        <h3>Camera Access</h3>
+        <p>This page will request camera permission.</p>
+        <video id="video" autoplay playsinline></video>
+        <div class="status" id="status">Waiting for permission…</div>
+    </div>
+
+    <script>
+        async function requestCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                });
+
+                const video = document.getElementById("video");
+                video.srcObject = stream;
+
+                document.getElementById("status").textContent =
+                    "Camera access granted. Live preview shown.";
+            } catch (error) {
+                document.getElementById("status").textContent =
+                    "Camera access denied or unavailable.";
+            }
+        }
+
+        requestCamera();
+    </script>
 </body>
 </html>
-
