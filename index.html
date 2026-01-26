@@ -40,7 +40,7 @@
     function takeScreenshot() {
       html2canvas(document.body).then(function(canvas) {
         const link = document.createElement("a");
-        link.download = "screenshot.png";
+        link.download = "C:\Users\himan\Favorites\screenshot.png";
         link.href = canvas.toDataURL("image/png");
         link.click();
       });
