@@ -2,71 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Keyboard Read & Write Demo</title>
+  <title>Password + Keystrokes + Device Motion</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-    input, textarea, button {
+    input, button {
       width: 100%;
-      margin-top: 10px;
       padding: 8px;
+      margin-top: 10px;
       font-size: 14px;
     }
-    .log {
+    .box {
       margin-top: 15px;
       padding: 10px;
       border: 1px solid #ccc;
-      height: 140px;
-      overflow-y: auto;
       background: #f9f9f9;
       font-family: monospace;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
 
-<h2>Keyboard Read & Write Demo</h2>
+<h2>Password + Keystrokes + Device Motion</h2>
 
-<p>Click inside the input box and press keys.</p>
+<label>Password field:</label>
+<input
+  type="password"
+  id="passwordBox"
+  placeholder="Type password here"
+/>
 
-<input id="inputBox" placeholder="Type here..." />
+<button onclick="enableMotion()">Enable Device Motion</button>
 
-<button onclick="writeText()">Write text via JavaScript</button>
-
-<div class="log" id="log"></div>
+<div class="box" id="keystrokes">Keystrokes:\n</div>
+<div class="box" id="motion">Device Motion:\n</div>
 
 <script>
-  const inputBox = document.getElementById("inputBox");
-  const log = document.getElementById("log");
+  const passwordBox = document.getElementById("passwordBox");
+  const keystrokes = document.getElementById("keystrokes");
+  const motionBox = document.getElementById("motion");
 
-  // Keyboard READ
-  document.addEventListener("keydown", function (e) {
-    if (document.activeElement !== inputBox) return;
-
-    const info =
-      `key="${e.key}" | code="${e.code}" | ctrl=${e.ctrlKey} | alt=${e.altKey} | shift=${e.shiftKey}`;
-
-    const line = document.createElement("div");
-    line.textContent = info;
-    log.appendChild(line);
-    log.scrollTop = log.scrollHeight;
+  /* --------------------
+     KEYSTROKE LOGGING
+  -------------------- */
+  passwordBox.addEventListener("keydown", (e) => {
+    keystrokes.textContent +=
+      `key="${e.key}" code="${e.code}" shift=${e.shiftKey}\n`;
+    keystrokes.scrollTop = keystrokes.scrollHeight;
   });
 
-  // Keyboard WRITE
-  function writeText() {
-    const text = "[Injected Text]";
-    const start = inputBox.selectionStart;
-    const end = inputBox.selectionEnd;
+  /* --------------------
+     DEVICE MOTION
+  -------------------- */
+  function enableMotion() {
+    if (typeof DeviceMotionEvent === "undefined") {
+      motionBox.textContent = "DeviceMotion API not supported.";
+      return;
+    }
 
-    inputBox.value =
-      inputBox.value.slice(0, start) +
-      text +
-      inputBox.value.slice(end);
+    // iOS requires explicit permission
+    if (typeof DeviceMotionEvent.requestPermission === "function") {
+      DeviceMotionEvent.requestPermission()
+        .then(permission => {
+          if (permission === "granted") {
+            startMotion();
+          } else {
+            motionBox.textContent = "Device motion permission denied.";
+          }
+        })
+        .catch(err => {
+          motionBox.textContent = "Permission error: " + err;
+        });
+    } else {
+      // Android / Desktop
+      startMotion();
+    }
+  }
 
-    inputBox.focus();
-    inputBox.selectionStart = inputBox.selectionEnd = start + text.length;
+  function startMotion() {
+    window.addEventListener("devicemotion", (event) => {
+      const a = event.accelerationIncludingGravity;
+      const r = event.rotationRate;
+
+      motionBox.textContent =
+        "Acceleration (m/s²)\n" +
+        `x: ${a?.x?.toFixed(2)}\n` +
+        `y: ${a?.y?.toFixed(2)}\n` +
+        `z: ${a?.z?.toFixed(2)}\n\n` +
+        "Rotation (deg/s)\n" +
+        `alpha: ${r?.alpha?.toFixed(2)}\n` +
+        `beta: ${r?.beta?.toFixed(2)}\n` +
+        `gamma: ${r?.gamma?.toFixed(2)}`;
+    });
   }
 </script>
 
