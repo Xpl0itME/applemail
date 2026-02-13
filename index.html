@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Password + Keystrokes + Device Motion</title>
+  <title>Single Page Cross-Window Keystrokes</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-    input, button {
-      width: 100%;
+    button {
       padding: 8px;
-      margin-top: 10px;
       font-size: 14px;
     }
-    .box {
+    .log {
       margin-top: 15px;
       padding: 10px;
       border: 1px solid #ccc;
+      height: 160px;
+      overflow-y: auto;
       background: #f9f9f9;
       font-family: monospace;
       white-space: pre-wrap;
@@ -26,78 +26,62 @@
 </head>
 <body>
 
-<h2>Password + Keystrokes + Device Motion</h2>
+<h2>Main Page</h2>
 
-<label>Password field:</label>
-<input
-  type="password"
-  id="passwordBox"
-  placeholder="Type password here"
-/>
+<button onclick="openTypingWindow()">Open typing window</button>
 
-<button onclick="enableMotion()">Enable Device Motion</button>
-
-<div class="box" id="keystrokes">Keystrokes:\n</div>
-<div class="box" id="motion">Device Motion:\n</div>
+<div class="log" id="log">Keystrokes:\n</div>
 
 <script>
-  const passwordBox = document.getElementById("passwordBox");
-  const keystrokes = document.getElementById("keystrokes");
-  const motionBox = document.getElementById("motion");
+  const log = document.getElementById("log");
 
-  /* --------------------
-     KEYSTROKE LOGGING
-  -------------------- */
-  passwordBox.addEventListener("keydown", (e) => {
-    keystrokes.textContent +=
-      `key="${e.key}" code="${e.code}" shift=${e.shiftKey}\n`;
-    keystrokes.scrollTop = keystrokes.scrollHeight;
-  });
+  function openTypingWindow() {
+    const win = window.open("", "", "width=400,height=250");
 
-  /* --------------------
-     DEVICE MOTION
-  -------------------- */
-  function enableMotion() {
-    if (typeof DeviceMotionEvent === "undefined") {
-      motionBox.textContent = "DeviceMotion API not supported.";
+    if (!win) {
+      alert("Popup blocked");
       return;
     }
 
-    // iOS requires explicit permission
-    if (typeof DeviceMotionEvent.requestPermission === "function") {
-      DeviceMotionEvent.requestPermission()
-        .then(permission => {
-          if (permission === "granted") {
-            startMotion();
-          } else {
-            motionBox.textContent = "Device motion permission denied.";
-          }
-        })
-        .catch(err => {
-          motionBox.textContent = "Permission error: " + err;
-        });
-    } else {
-      // Android / Desktop
-      startMotion();
-    }
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Typing Window</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          input { width: 100%; padding: 8px; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <h3>Type here</h3>
+        <input id="box" placeholder="Type something" autofocus />
+        <script>
+          const box = document.getElementById("box");
+          box.addEventListener("keydown", (e) => {
+            if (window.opener) {
+              window.opener.postMessage(
+                { key: e.key, code: e.code },
+                "*"
+              );
+            }
+          });
+        <\/script>
+      </body>
+      </html>
+    `);
+
+    win.document.close();
   }
 
-  function startMotion() {
-    window.addEventListener("devicemotion", (event) => {
-      const a = event.accelerationIncludingGravity;
-      const r = event.rotationRate;
+  window.addEventListener("message", (event) => {
+    if (!event.data || !event.data.key) return;
 
-      motionBox.textContent =
-        "Acceleration (m/s²)\n" +
-        `x: ${a?.x?.toFixed(2)}\n` +
-        `y: ${a?.y?.toFixed(2)}\n` +
-        `z: ${a?.z?.toFixed(2)}\n\n` +
-        "Rotation (deg/s)\n" +
-        `alpha: ${r?.alpha?.toFixed(2)}\n` +
-        `beta: ${r?.beta?.toFixed(2)}\n` +
-        `gamma: ${r?.gamma?.toFixed(2)}`;
-    });
-  }
+    log.textContent +=
+      'key="' + event.data.key + '" code="' + event.data.code + '"\n';
+
+    log.scrollTop = log.scrollHeight;
+  });
 </script>
 
 </body>
