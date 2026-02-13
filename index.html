@@ -2,86 +2,191 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Single Page Cross-Window Keystrokes</title>
+  <title>Cross-Origin Loading Methods PoC</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-    button {
-      padding: 8px;
-      font-size: 14px;
+    section {
+      margin-bottom: 25px;
     }
-    .log {
-      margin-top: 15px;
-      padding: 10px;
+    iframe, embed, object, video {
+      width: 100%;
       border: 1px solid #ccc;
-      height: 160px;
-      overflow-y: auto;
-      background: #f9f9f9;
-      font-family: monospace;
+      margin-top: 8px;
+    }
+    iframe { height: 180px; }
+    embed, object { height: 250px; }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
       white-space: pre-wrap;
+    }
+    .small {
+      font-size: 13px;
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-<h2>Main Page</h2>
+<h2>Cross-Origin Content Display & Fetch Methods</h2>
 
-<button onclick="openTypingWindow()">Open typing window</button>
+<p class="small">
+Target: xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun
+</p>
 
-<div class="log" id="log">Keystrokes:\n</div>
+<hr>
+
+<section>
+  <h3>1. fetch() standard</h3>
+  <button onclick="fetchNormal()">Run fetch()</button>
+  <pre id="fetch1">Idle</pre>
+</section>
+
+<section>
+  <h3>2. fetch() with no-cors</h3>
+  <button onclick="fetchNoCors()">Run fetch(no-cors)</button>
+  <pre id="fetch2">Idle</pre>
+</section>
+
+<section>
+  <h3>3. XMLHttpRequest</h3>
+  <button onclick="xhrTest()">Run XHR</button>
+  <pre id="fetch3">Idle</pre>
+</section>
+
+<section>
+  <h3>4. fetch() → blob()</h3>
+  <button onclick="fetchBlob()">Fetch as blob</button>
+  <div id="blobOut" class="small">Idle</div>
+</section>
+
+<section>
+  <h3>5. iframe (HTML or PDF)</h3>
+  <iframe src="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun"></iframe>
+</section>
+
+<section>
+  <h3>6. embed PDF</h3>
+  <embed
+    src="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun/test.pdf"
+    type="application/pdf">
+</section>
+
+<section>
+  <h3>7. object PDF</h3>
+  <object
+    data="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun/test.pdf"
+    type="application/pdf">
+    PDF cannot be displayed
+  </object>
+</section>
+
+<section>
+  <h3>8. Image</h3>
+  <img
+    src="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun/test.png"
+    width="250"
+    onerror="this.nextSibling.textContent='Image load failed'">
+  <span class="small"></span>
+</section>
+
+<section>
+  <h3>9. Audio</h3>
+  <audio controls src="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun/test.mp3"></audio>
+</section>
+
+<section>
+  <h3>10. Video</h3>
+  <video controls height="180"
+    src="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun/test.mp4">
+  </video>
+</section>
+
+<section>
+  <h3>11. Dynamic script injection</h3>
+  <button onclick="loadScript()">Load script</button>
+  <pre id="scriptOut">Idle</pre>
+</section>
+
+<section>
+  <h3>12. Stylesheet load</h3>
+  <link rel="stylesheet"
+    href="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun/test.css">
+  <div class="small">If CSS loads, page style may change</div>
+</section>
+
+<section>
+  <h3>13. Direct download link</h3>
+  <a
+    href="https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun/test.pdf"
+    download>
+    Download PDF
+  </a>
+</section>
 
 <script>
-  const log = document.getElementById("log");
+  const target = "https://xoayunfbobpgizlbqoofqzodw2ldem5a6.oast.fun";
 
-  function openTypingWindow() {
-    const win = window.open("", "", "width=400,height=250");
-
-    if (!win) {
-      alert("Popup blocked");
-      return;
+  async function fetchNormal() {
+    const out = document.getElementById("fetch1");
+    out.textContent = "Running…";
+    try {
+      const r = await fetch(target);
+      out.textContent = await r.text();
+    } catch (e) {
+      out.textContent = "Blocked by CORS/SOP\n" + e;
     }
-
-    win.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Typing Window</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
-          input { width: 100%; padding: 8px; font-size: 14px; }
-        </style>
-      </head>
-      <body>
-        <h3>Type here</h3>
-        <input id="box" placeholder="Type something" autofocus />
-        <script>
-          const box = document.getElementById("box");
-          box.addEventListener("keydown", (e) => {
-            if (window.opener) {
-              window.opener.postMessage(
-                { key: e.key, code: e.code },
-                "*"
-              );
-            }
-          });
-        <\/script>
-      </body>
-      </html>
-    `);
-
-    win.document.close();
   }
 
-  window.addEventListener("message", (event) => {
-    if (!event.data || !event.data.key) return;
+  async function fetchNoCors() {
+    const out = document.getElementById("fetch2");
+    try {
+      const r = await fetch(target, { mode: "no-cors" });
+      out.textContent =
+        "no-cors response\n" +
+        "type: " + r.type + "\n" +
+        "status: " + r.status;
+    } catch (e) {
+      out.textContent = e;
+    }
+  }
 
-    log.textContent +=
-      'key="' + event.data.key + '" code="' + event.data.code + '"\n';
+  function xhrTest() {
+    const out = document.getElementById("fetch3");
+    const x = new XMLHttpRequest();
+    x.open("GET", target);
+    x.onload = () => out.textContent = x.responseText;
+    x.onerror = () => out.textContent = "XHR blocked by browser";
+    x.send();
+  }
 
-    log.scrollTop = log.scrollHeight;
-  });
+  async function fetchBlob() {
+    const out = document.getElementById("blobOut");
+    try {
+      const r = await fetch(target + "/test.pdf");
+      const b = await r.blob();
+      out.textContent =
+        "Blob fetched\n" +
+        "type: " + b.type + "\n" +
+        "size: " + b.size;
+    } catch (e) {
+      out.textContent = "Blob fetch blocked";
+    }
+  }
+
+  function loadScript() {
+    const out = document.getElementById("scriptOut");
+    const s = document.createElement("script");
+    s.src = target + "/test.js";
+    s.onload = () => out.textContent = "Script loaded";
+    s.onerror = () => out.textContent = "Script load failed";
+    document.body.appendChild(s);
+  }
 </script>
 
 </body>
