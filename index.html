@@ -2,77 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Clipboard Interaction Demo</title>
+  <title>Clipboard Auto Access Test</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-
     button {
       padding: 8px 12px;
-      margin-right: 10px;
+      margin-top: 10px;
       font-size: 14px;
       cursor: pointer;
     }
-
     textarea {
       width: 100%;
-      height: 120px;
+      height: 140px;
       margin-top: 15px;
       font-family: monospace;
     }
-
     .note {
-      margin-top: 10px;
       font-size: 13px;
       color: #555;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<h2>Clipboard Read / Write Demo</h2>
+<h2>Clipboard Auto-Access Test</h2>
 
-<button onclick="readClipboard()">Show previous copied data</button>
-<button onclick="writeClipboard()">Copy predefined data</button>
+<textarea id="out">Page loading…</textarea>
 
-<textarea id="output" placeholder="Clipboard content will appear here"></textarea>
+<button onclick="manualRead()">Read clipboard (user click)</button>
 
 <div class="note">
-  Works only on HTTPS or localhost.  
-  Clipboard access requires a user click.
+  Clipboard read on page load is blocked by all modern browsers.
 </div>
 
 <script>
-  const output = document.getElementById("output");
+  const out = document.getElementById("out");
 
-  async function readClipboard() {
-    output.value = "Reading clipboard…";
+  // 1. Auto attempt on load (will fail)
+  window.addEventListener("load", async () => {
+    out.value = "Trying to read clipboard on page load…\n\n";
 
     try {
       const text = await navigator.clipboard.readText();
-      output.value = text || "[Clipboard is empty]";
-    } catch (err) {
-      output.value =
-        "Clipboard read failed.\n" +
-        "Reason: Permission denied or browser restriction.";
+      out.value += "Clipboard content:\n" + text;
+    } catch (e) {
+      out.value +=
+        "❌ Clipboard read blocked on load\n" +
+        "Reason: User gesture required\n\n";
     }
-  }
 
-  async function writeClipboard() {
-    const data =
-      "This text was written to the clipboard using JavaScript.\n" +
-      "Time: " + new Date().toISOString();
-
+    // 2. Auto write attempt (may or may not work)
     try {
-      await navigator.clipboard.writeText(data);
-      output.value = "Copied to clipboard:\n\n" + data;
-    } catch (err) {
-      output.value =
-        "Clipboard write failed.\n" +
-        "Reason: Permission denied or browser restriction.";
+      await navigator.clipboard.writeText(
+        "Auto-written clipboard data\n" +
+        "Time: " + new Date().toISOString()
+      );
+      out.value += "✅ Clipboard write attempted on load\n";
+    } catch (e) {
+      out.value += "❌ Clipboard write blocked on load\n";
+    }
+  });
+
+  // 3. Manual read (works)
+  async function manualRead() {
+    try {
+      const text = await navigator.clipboard.readText();
+      out.value = "Clipboard content (user click):\n\n" + text;
+    } catch (e) {
+      out.value =
+        "Clipboard read failed.\n" +
+        "Permission denied or browser restriction.";
     }
   }
 </script>
