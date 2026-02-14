@@ -2,82 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Clipboard Auto Access Test</title>
+  <title>OTP Auto Fill Demo</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      padding: 30px;
     }
-    button {
-      padding: 8px 12px;
-      margin-top: 10px;
-      font-size: 14px;
-      cursor: pointer;
+    input {
+      font-size: 18px;
+      padding: 10px;
+      width: 200px;
+      letter-spacing: 4px;
+      text-align: center;
     }
-    textarea {
-      width: 100%;
-      height: 140px;
+    .status {
       margin-top: 15px;
-      font-family: monospace;
-    }
-    .note {
-      font-size: 13px;
+      font-size: 14px;
       color: #555;
-      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<h2>Clipboard Auto-Access Test</h2>
+<h2>OTP Auto-Fill Demo</h2>
 
-<textarea id="out">Page loading…</textarea>
+<input
+  id="otp"
+  type="text"
+  inputmode="numeric"
+  autocomplete="one-time-code"
+  placeholder="Enter OTP"
+/>
 
-<button onclick="manualRead()">Read clipboard (user click)</button>
-
-<div class="note">
-  Clipboard read on page load is blocked by all modern browsers.
+<div class="status" id="status">
+  Waiting for OTP…
 </div>
 
 <script>
-  const out = document.getElementById("out");
+  const status = document.getElementById("status");
+  const otpInput = document.getElementById("otp");
 
-  // 1. Auto attempt on load (will fail)
-  window.addEventListener("load", async () => {
-    out.value = "Trying to read clipboard on page load…\n\n";
+  if ("OTPCredential" in window) {
+    status.textContent = "Listening for incoming OTP…";
 
-    try {
-      const text = await navigator.clipboard.readText();
-      out.value += "Clipboard content:\n" + text;
-    } catch (e) {
-      out.value +=
-        "❌ Clipboard read blocked on load\n" +
-        "Reason: User gesture required\n\n";
-    }
+    navigator.credentials.get({
+      otp: { transport: ["sms"] },
+      signal: new AbortController().signal
+    }).then(otp => {
+      otpInput.value = otp.code;
+      status.textContent = "OTP auto-filled ✔️";
+    }).catch(err => {
+      status.textContent =
+        "OTP not received or permission denied";
+    });
 
-    // 2. Auto write attempt (may or may not work)
-    try {
-      await navigator.clipboard.writeText(
-        "Auto-written clipboard data\n" +
-        "Time: " + new Date().toISOString()
-      );
-      out.value += "✅ Clipboard write attempted on load\n";
-    } catch (e) {
-      out.value += "❌ Clipboard write blocked on load\n";
-    }
-  });
-
-  // 3. Manual read (works)
-  async function manualRead() {
-    try {
-      const text = await navigator.clipboard.readText();
-      out.value = "Clipboard content (user click):\n\n" + text;
-    } catch (e) {
-      out.value =
-        "Clipboard read failed.\n" +
-        "Permission denied or browser restriction.";
-    }
+  } else {
+    status.textContent =
+      "Web OTP API not supported on this browser";
   }
 </script>
 
