@@ -2,64 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>OTP Auto Fill Demo</title>
+  <title>iOS Safari OTP Verification</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui;
+      background: #f5f5f7;
       padding: 30px;
     }
-    input {
-      font-size: 18px;
-      padding: 10px;
-      width: 200px;
-      letter-spacing: 4px;
-      text-align: center;
+
+    .card {
+      max-width: 360px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.08);
     }
-    .status {
+
+    h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    input {
+      width: 100%;
+      font-size: 20px;
+      padding: 12px;
+      text-align: center;
+      letter-spacing: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #007aff;
+    }
+
+    button {
+      width: 100%;
       margin-top: 15px;
-      font-size: 14px;
+      padding: 12px;
+      font-size: 16px;
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
       color: #555;
+      min-height: 18px;
     }
   </style>
 </head>
 <body>
 
-<h2>OTP Auto-Fill Demo</h2>
+<div class="card">
+  <h2>Verify OTP</h2>
 
-<input
-  id="otp"
-  type="text"
-  inputmode="numeric"
-  autocomplete="one-time-code"
-  placeholder="Enter OTP"
-/>
+  <p>
+    Enter the 6-digit code sent to your phone.
+  </p>
 
-<div class="status" id="status">
-  Waiting for OTP…
+  <input
+    id="otp"
+    type="text"
+    inputmode="numeric"
+    autocomplete="one-time-code"
+    pattern="[0-9]{6}"
+    placeholder="••••••"
+  >
+
+  <button onclick="verifyOtp()">Verify</button>
+
+  <div class="status" id="status">
+    Waiting for OTP…
+  </div>
 </div>
 
 <script>
-  const status = document.getElementById("status");
   const otpInput = document.getElementById("otp");
+  const status = document.getElementById("status");
 
-  if ("OTPCredential" in window) {
-    status.textContent = "Listening for incoming OTP…";
+  // Detect OTP AFTER user inserts it (keyboard suggestion / paste / typing)
+  otpInput.addEventListener("input", () => {
+    if (otpInput.value.length === 6) {
+      status.textContent = "OTP entered ✔️";
+    } else {
+      status.textContent = "Waiting for OTP…";
+    }
+  });
 
-    navigator.credentials.get({
-      otp: { transport: ["sms"] },
-      signal: new AbortController().signal
-    }).then(otp => {
-      otpInput.value = otp.code;
-      status.textContent = "OTP auto-filled ✔️";
-    }).catch(err => {
-      status.textContent =
-        "OTP not received or permission denied";
-    });
+  // Handle paste explicitly (common on iOS)
+  otpInput.addEventListener("paste", () => {
+    status.textContent = "OTP pasted ✔️";
+  });
 
-  } else {
-    status.textContent =
-      "Web OTP API not supported on this browser";
+  function verifyOtp() {
+    if (otpInput.value.length !== 6) {
+      status.textContent = "Please enter a valid OTP";
+      return;
+    }
+
+    // Simulated verification
+    status.textContent = "Verifying OTP…";
+
+    setTimeout(() => {
+      status.textContent = "OTP verified successfully ✅";
+    }, 1000);
   }
 </script>
 
