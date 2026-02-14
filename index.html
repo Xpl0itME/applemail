@@ -2,122 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>iOS Safari OTP Verification</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title>Uncontrolled Object Creation Demo</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, system-ui;
-      background: #f5f5f7;
-      padding: 30px;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
     }
-
-    .card {
-      max-width: 360px;
-      margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,.08);
-    }
-
-    h2 {
-      margin-top: 0;
-      font-size: 20px;
-    }
-
-    input {
-      width: 100%;
-      font-size: 20px;
-      padding: 12px;
-      text-align: center;
-      letter-spacing: 6px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #007aff;
-    }
-
     button {
-      width: 100%;
-      margin-top: 15px;
-      padding: 12px;
-      font-size: 16px;
-      background: #007aff;
-      color: white;
+      padding: 10px 16px;
+      margin-right: 10px;
       border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #start { background: #dc2626; color: white; }
+    #stop { background: #16a34a; color: white; }
+    #stats {
+      margin-top: 20px;
+      background: #020617;
+      padding: 15px;
       border-radius: 8px;
     }
-
-    .status {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #555;
-      min-height: 18px;
+    .warn {
+      color: #facc15;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h2>Verify OTP</h2>
-
+  <h2>Uncontrolled Object Creation (DoS Demo)</h2>
   <p>
-    Enter the 6-digit code sent to your phone.
+    This page intentionally creates unlimited objects to demonstrate
+    memory and CPU exhaustion.
   </p>
 
-  <input
-    id="otp"
-    type="text"
-    inputmode="numeric"
-    autocomplete="one-time-code"
-    pattern="[0-9]{6}"
-    placeholder="••••••"
-  >
+  <button id="start">Start Object Flood</button>
+  <button id="stop">Stop</button>
 
-  <button onclick="verifyOtp()">Verify</button>
-
-  <div class="status" id="status">
-    Waiting for OTP…
+  <div id="stats">
+    <div>Objects created: <span id="count">0</span></div>
+    <div>Status: <span id="status">Idle</span></div>
   </div>
-</div>
 
-<script>
-  const otpInput = document.getElementById("otp");
-  const status = document.getElementById("status");
+  <p class="warn">
+    Warning: This may freeze your tab or browser.
+  </p>
 
-  // Detect OTP AFTER user inserts it (keyboard suggestion / paste / typing)
-  otpInput.addEventListener("input", () => {
-    if (otpInput.value.length === 6) {
-      status.textContent = "OTP entered ✔️";
-    } else {
-      status.textContent = "Waiting for OTP…";
+  <script>
+    let objects = [];
+    let running = false;
+    let counter = 0;
+    let loopId;
+
+    function createObjects() {
+      if (!running) return;
+
+      for (let i = 0; i < 5000; i++) {
+        objects.push({
+          id: counter++,
+          data: new Array(1000).fill("DoS"),
+          time: Date.now()
+        });
+      }
+
+      document.getElementById("count").textContent = counter;
+
+      // keep event loop busy
+      loopId = requestAnimationFrame(createObjects);
     }
-  });
 
-  // Handle paste explicitly (common on iOS)
-  otpInput.addEventListener("paste", () => {
-    status.textContent = "OTP pasted ✔️";
-  });
+    document.getElementById("start").onclick = () => {
+      if (running) return;
+      running = true;
+      document.getElementById("status").textContent = "Flooding memory...";
+      createObjects();
+    };
 
-  function verifyOtp() {
-    if (otpInput.value.length !== 6) {
-      status.textContent = "Please enter a valid OTP";
-      return;
-    }
-
-    // Simulated verification
-    status.textContent = "Verifying OTP…";
-
-    setTimeout(() => {
-      status.textContent = "OTP verified successfully ✅";
-    }, 1000);
-  }
-</script>
+    document.getElementById("stop").onclick = () => {
+      running = false;
+      cancelAnimationFrame(loopId);
+      objects = [];
+      document.getElementById("status").textContent = "Stopped and cleared";
+    };
+  </script>
 
 </body>
 </html>
