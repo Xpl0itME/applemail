@@ -1,146 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Auto Object Flood Demo</title>
-  <style>
-    body {
-      background: #020617;
-      color: #e5e7eb;
-      font-family: system-ui, Arial;
-      padding: 20px;
-    }
-    button {
-      padding: 10px 16px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      background: #16a34a;
-      color: white;
-    }
-    .panel {
-      margin-top: 15px;
-      padding: 15px;
-      background: #020617;
-      border: 1px solid #1e293b;
-      border-radius: 8px;
-    }
-    .warn {
-      color: #facc15;
-      margin-top: 10px;
-    }
-  </style>
+  <meta charset="utf-8">
+  <title>Sign in with Apple – Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Apple official JS -->
+  <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
 </head>
 <body>
 
-<h2>Auto-Start Resource Exhaustion Demo</h2>
-<p>
-This page automatically creates objects and CPU pressure on load.
-</p>
+<h2>Sign in with Apple (Test Page)</h2>
 
-<button onclick="stopAll()">Emergency Stop & Cleanup</button>
-
-<div class="panel">
-  <div>Objects created: <span id="objCount">0</span></div>
-  <div>CPU loops: <span id="cpuCount">0</span></div>
-  <div>Status: <span id="status">Starting…</span></div>
+<div id="appleid-signin"
+     data-color="black"
+     data-border="true"
+     data-type="sign in">
 </div>
 
-<p class="warn">
-If the page freezes, close the tab.
-</p>
-
 <script>
-let heapStore = [];
-let running = true;
-let rafId;
-let cpuTimer;
-let workers = [];
-
-let objects = 0;
-let cpuLoops = 0;
-
-function createHeavyObject() {
-  return {
-    id: objects++,
-    payload: new Array(4000).fill(Math.random()),
-    nested: {
-      time: Date.now(),
-      data: new Array(2000).fill("X")
-    }
-  };
-}
-
-/* Memory + GC pressure */
-function memoryFlood() {
-  if (!running) return;
-
-  for (let i = 0; i < 2500; i++) {
-    heapStore.push(createHeavyObject());
-  }
-
-  document.getElementById("objCount").textContent = objects;
-  rafId = requestAnimationFrame(memoryFlood);
-}
-
-/* CPU starvation */
-function cpuFlood() {
-  if (!running) return;
-
-  let x = 0;
-  for (let i = 0; i < 4e6; i++) {
-    x += Math.sqrt(i) * Math.random();
-  }
-
-  cpuLoops++;
-  document.getElementById("cpuCount").textContent = cpuLoops;
-}
-
-/* Parallel pressure (Web Workers) */
-function startWorkers() {
-  const blob = new Blob([`
-    while (true) {
-      let y = 0;
-      for (let i = 0; i < 1e6; i++) {
-        y += Math.random();
-      }
-    }
-  `], { type: "application/javascript" });
-
-  const url = URL.createObjectURL(blob);
-
-  for (let i = 0; i < 2; i++) {
-    workers.push(new Worker(url));
-  }
-}
-
-/* Cleanup */
-function stopAll() {
-  running = false;
-
-  cancelAnimationFrame(rafId);
-  clearInterval(cpuTimer);
-
-  workers.forEach(w => w.terminate());
-  workers = [];
-
-  heapStore = [];
-  objects = 0;
-  cpuLoops = 0;
-
-  document.getElementById("objCount").textContent = "0";
-  document.getElementById("cpuCount").textContent = "0";
-  document.getElementById("status").textContent = "Stopped & cleaned";
-}
-
-/* AUTO START ON PAGE LOAD */
-window.addEventListener("load", () => {
-  document.getElementById("status").textContent = "Running (auto-started)";
-  memoryFlood();
-  cpuTimer = setInterval(cpuFlood, 15);
-  startWorkers();
-});
+  AppleID.auth.init({
+    clientId: "com.example.web",          // Service ID
+    scope: "name email",
+    redirectURI: "https://yourdomain.com/callback",
+    state: "test_state",
+    usePopup: true
+  });
 </script>
 
 </body>
