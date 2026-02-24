@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Amazon Dual Call</title>
+<title>POC</title>
 
 <style>
   body {
@@ -36,11 +36,11 @@
   href="https://www.amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
   target="_blank"
   rel="nofollow sponsored"
-  aria-label="Check Price on Amazon for BGMI Porsche Car Skin"
+  aria-label="POC"
   aria-disabled="false"
   data-app-link="com.amazon.mobile.shopping.web://amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
 >
-  Check Price on Amazon
+  POC CLICK HERE
 </a>
 
 <script>
@@ -54,16 +54,16 @@
     const appLink = cta.getAttribute("data-app-link");
     const webLink = cta.getAttribute("href");
 
-    // 1️⃣ FIRST: try to open Amazon app
     window.location.href = appLink;
 
-    // 2️⃣ AFTER 30ms: open web link in new tab
+   
     setTimeout(function () {
       window.open(webLink, "_blank");
-    }, 30);
+    }, 300);
   });
 })();
 </script>
 
 </body>
 </html>
+
