@@ -1,38 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Open iPhone Calculator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #f2f2f2;
-        }
+<meta charset="UTF-8">
+<title>Amazon CTA</title>
 
-        button {
-            padding: 14px 24px;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            background-color: #007aff;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f5f5;
+    font-family: Arial, sans-serif;
+  }
+
+  .cta {
+    display: flex;              /* flex applied */
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 14px 24px;
+    background-color: #ff9900;
+    color: #000;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .cta:hover {
+    opacity: 0.9;
+  }
+</style>
 </head>
+
 <body>
 
-<button onclick="openCalculator()">Open Calculator</button>
-
-<script>
-function openCalculator() {
-    window.location.href = "calculator://";
-}
-</script>
+<a
+  id="cta"
+  class="cta"
+  data-store="amazon"
+  href="https://www.amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
+  target="_blank"
+  rel="nofollow sponsored"
+  aria-label="Check Price on Amazon for BGMI Porsche Car Skin"
+  aria-disabled="false"
+  data-app-link="com.amazon.mobile.shopping.web://amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
+>
+  Check Price on Amazon
+</a>
 
 </body>
 </html>
