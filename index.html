@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BGMI Porsche Car Skin</title>
 
 <style>
@@ -40,10 +40,9 @@
     margin-bottom: 28px;
   }
   .cta {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
     padding: 16px 22px;
     background: #ff9900;
     color: #000;
@@ -63,15 +62,16 @@
 </head>
 
 <body>
+
 <div class="app">
 
-  <header>Link Plox</header>
+  <header>Link Page</header>
 
   <div class="content">
     <h1>BGMI Porsche Car Skin</h1>
-    <p>Tap the button below to open the product in the Amazon app or website.</p>
+    <p>Tap below to open in the Amazon app or website.</p>
 
-    <!-- YOUR CTA (UNCHANGED) -->
+    <!-- CTA (UNCHANGED ATTRIBUTES) -->
     <a
       id="cta"
       class="cta"
@@ -88,7 +88,7 @@
   </div>
 
   <footer>
-    Affiliate disclosure: Some links may earn a commission at no extra cost to you.
+    Affiliate disclosure applies.
   </footer>
 
 </div>
@@ -99,23 +99,23 @@
   if (!cta) return;
 
   cta.addEventListener("click", function (e) {
-    const appLink = cta.getAttribute("data-app-link");
     const webLink = cta.getAttribute("href");
-    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const appLink = cta.getAttribute("data-app-link");
+    const isiOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 
     if (isiOS && appLink) {
-      // Pause default behavior briefly
+      // Stop default just for iOS
       e.preventDefault();
 
-      // 1) Try Amazon app (triggers iOS popup)
-      window.location.href = appLink;
+      // 1️⃣ Open web link in new tab (required for _blank)
+      window.open(webLink, "_blank");
 
-      // 2) Also open web link in new tab as fallback
+      // 2️⃣ Trigger app link (iOS popup)
       setTimeout(function () {
-        window.open(webLink, "_blank");
-      }, 1200);
+        window.location.href = appLink;
+      }, 50);
     }
-    // Non-iOS: default link behavior continues
+    // Non-iOS: browser handles href + _blank normally
   });
 })();
 </script>
