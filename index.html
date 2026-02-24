@@ -54,11 +54,13 @@
     const appLink = cta.getAttribute("data-app-link");
     const webLink = cta.getAttribute("href");
 
-    // 1️⃣ FIRST: try to open Amazon app (iOS popup)
+    // 1️⃣ FIRST: try to open Amazon app
     window.location.href = appLink;
 
-    // 2️⃣ IMMEDIATELY: open web link in new tab
-    window.open(webLink, "_blank");
+    // 2️⃣ AFTER 30ms: open web link in new tab
+    setTimeout(function () {
+      window.open(webLink, "_blank");
+    }, 30);
   });
 })();
 </script>
