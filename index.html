@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Amazon Redirect</title>
+<title>Amazon Dual Call</title>
 
 <style>
   body {
@@ -29,7 +29,6 @@
 
 <body>
 
-<!-- CTA (UNCHANGED ATTRIBUTES) -->
 <a
   id="cta"
   class="cta"
@@ -50,7 +49,7 @@
   if (!cta) return;
 
   cta.addEventListener("click", function (e) {
-    e.preventDefault(); // we control the order
+    e.preventDefault();
 
     const appLink = cta.getAttribute("data-app-link");
     const webLink = cta.getAttribute("href");
@@ -58,10 +57,8 @@
     // 1️⃣ FIRST: try to open Amazon app (iOS popup)
     window.location.href = appLink;
 
-    // 2️⃣ THEN: open web link in new tab
-    setTimeout(function () {
-      window.open(webLink, "_blank");
-    }, 1200);
+    // 2️⃣ IMMEDIATELY: open web link in new tab
+    window.open(webLink, "_blank");
   });
 })();
 </script>
