@@ -3,95 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BGMI Porsche Car Skin</title>
+<title>Amazon Redirect</title>
 
 <style>
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
     background: #f2f2f2;
   }
-  .app {
-    max-width: 420px;
-    margin: 0 auto;
-    min-height: 100vh;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-  }
-  header {
-    padding: 16px;
-    text-align: center;
-    font-weight: 600;
-    border-bottom: 1px solid #e5e5e5;
-  }
-  .content {
-    flex: 1;
-    padding: 24px 20px;
-    text-align: center;
-  }
-  h1 {
-    font-size: 26px;
-    margin-bottom: 12px;
-  }
-  p {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 28px;
-  }
   .cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 22px;
+    padding: 16px 24px;
     background: #ff9900;
     color: #000;
-    border-radius: 10px;
     text-decoration: none;
+    border-radius: 8px;
     font-weight: 600;
     font-size: 16px;
-  }
-  footer {
-    padding: 14px;
-    font-size: 11px;
-    color: #666;
-    text-align: center;
-    border-top: 1px solid #e5e5e5;
   }
 </style>
 </head>
 
 <body>
 
-<div class="app">
-
-  <header>Link Page</header>
-
-  <div class="content">
-    <h1>BGMI Porsche Car Skin</h1>
-    <p>Tap below to open in the Amazon app or website.</p>
-
-    <!-- CTA (UNCHANGED ATTRIBUTES) -->
-    <a
-      id="cta"
-      class="cta"
-      data-store="amazon"
-      href="https://www.amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
-      target="_blank"
-      rel="nofollow sponsored"
-      aria-label="Check Price on Amazon for BGMI Porsche Car Skin"
-      aria-disabled="false"
-      data-app-link="com.amazon.mobile.shopping.web://amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
-    >
-      Check Price on Amazon
-    </a>
-  </div>
-
-  <footer>
-    Affiliate disclosure applies.
-  </footer>
-
-</div>
+<!-- CTA (UNCHANGED ATTRIBUTES) -->
+<a
+  id="cta"
+  class="cta"
+  data-store="amazon"
+  href="https://www.amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
+  target="_blank"
+  rel="nofollow sponsored"
+  aria-label="Check Price on Amazon for BGMI Porsche Car Skin"
+  aria-disabled="false"
+  data-app-link="com.amazon.mobile.shopping.web://amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
+>
+  Check Price on Amazon
+</a>
 
 <script>
 (function () {
@@ -99,23 +50,18 @@
   if (!cta) return;
 
   cta.addEventListener("click", function (e) {
-    const webLink = cta.getAttribute("href");
+    e.preventDefault(); // we control the order
+
     const appLink = cta.getAttribute("data-app-link");
-    const isiOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const webLink = cta.getAttribute("href");
 
-    if (isiOS && appLink) {
-      // Stop default just for iOS
-      e.preventDefault();
+    // 1️⃣ FIRST: try to open Amazon app (iOS popup)
+    window.location.href = appLink;
 
-      // 1️⃣ Open web link in new tab (required for _blank)
+    // 2️⃣ THEN: open web link in new tab
+    setTimeout(function () {
       window.open(webLink, "_blank");
-
-      // 2️⃣ Trigger app link (iOS popup)
-      setTimeout(function () {
-        window.location.href = appLink;
-      }, 50);
-    }
-    // Non-iOS: browser handles href + _blank normally
+    }, 1200);
   });
 })();
 </script>
