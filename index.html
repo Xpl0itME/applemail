@@ -1,69 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>POC</title>
-
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    background: #f2f2f2;
-  }
-  .cta {
-    padding: 16px 24px;
-    background: #ff9900;
-    color: #000;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 16px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Metadata Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <div class="container">
+        <header>
+            <h1>Photo Metadata Viewer</h1>
+            <p>Upload a photo to instantly reveal its hidden metadata</p>
+        </header>
 
-<a
-  id="cta"
-  class="cta"
-  data-store="amazon"
-  href="https://www.amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
-  target="_blank"
-  rel="nofollow sponsored"
-  aria-label="POC"
-  aria-disabled="false"
-  data-app-link="com.amazon.mobile.shopping.web://amazon.in/s?k=BGMI%20Porsche%20Car%20Skin&tag=82427282-21"
->
-  POC CLICK HERE
-</a>
+        <main>
+            <div class="upload-section" id="drop-zone">
+                <input type="file" id="file-input" accept="image/jpeg, image/png, image/webp, image/heic" hidden>
+                <div class="upload-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <p>Drag & Drop your image here</p>
+                    <span>or</span>
+                    <button class="browse-btn" id="browse-btn">Browse Files</button>
+                </div>
+            </div>
 
-<script>
-(function () {
-  const cta = document.getElementById("cta");
-  if (!cta) return;
+            <div class="results-section hidden" id="results-section">
+                <div class="image-preview">
+                    <img id="preview-img" src="" alt="Selected Photo">
+                </div>
+                <div class="metadata-display">
+                    <h2>Metadata</h2>
+                    <div class="metadata-grid" id="metadata-grid">
+                        <!-- Metadata items will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
-  cta.addEventListener("click", function (e) {
-    e.preventDefault();
-
-    const appLink = cta.getAttribute("data-app-link");
-    const webLink = cta.getAttribute("href");
-
-    window.location.href = appLink;
-
-   
-    setTimeout(function () {
-      window.open(webLink, "_blank");
-    }, 300);
-  });
-})();
-</script>
-
+    <!-- Include exifr library to parse exif/metadata -->
+    <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
-
